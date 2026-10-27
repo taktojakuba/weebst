@@ -3,13 +3,15 @@
 st-wl \- simple terminal
 .SH SYNOPSIS
 .B st-wl
-.RB [ \-aiv ]
+.RB [ \-av ]
+.RB [ \-A
+.IR alpha ]
+.RB [ \-U
+.IR alpha ]
 .RB [ \-c
 .IR class ]
 .RB [ \-f
 .IR font ]
-.RB [ \-g
-.IR geometry ]
 .RB [ \-n
 .IR name ]
 .RB [ \-o
@@ -27,13 +29,15 @@ st-wl \- simple terminal
 .RI [ arguments ...]]
 .PP
 .B st-wl
-.RB [ \-aiv ]
+.RB [ \-av ]
+.RB [ \-A
+.IR alpha ]
+.RB [ \-U
+.IR alpha ]
 .RB [ \-c
 .IR class ]
 .RB [ \-f
 .IR font ]
-.RB [ \-g
-.IR geometry ]
 .RB [ \-n
 .IR name ]
 .RB [ \-o
@@ -49,31 +53,39 @@ st-wl \- simple terminal
 .RI [ stty_args ...]
 .SH DESCRIPTION
 .B st-wl
-is a simple terminal emulator.
+is a simple terminal emulator for Wayland. It sets
+.B TERM
+to
+.I @TERMNAME@
+and opens a window of @COLS@ columns by @ROWS@ rows.
 .SH OPTIONS
 .TP
 .B \-a
 disable alternate screens in terminal
 .TP
+.BI \-A " alpha"
+defines the background opacity, from 0.0 (transparent) to 1.0 (opaque)
+(default @ALPHA@).
+.TP
+.BI \-U " alpha"
+defines the background opacity used when the window does not have keyboard
+focus, and for cells drawn in the unfocusedpanebg color (e.g. inactive tmux
+panes) (default @ALPHA_UNFOCUSED@). See
+.B FOCUS TRANSPARENCY
+below.
+.TP
 .BI \-c " class"
-defines the window class (default $TERM).
+defines the window class, used as the Wayland app_id (default '@TERMCLASS@').
 .TP
 .BI \-f " font"
 defines the
 .I font
-to use when st-wl is run.
-.TP
-.BI \-g " geometry"
-defines the X11 geometry string.
-The form is [=][<cols>{xX}<rows>][{+-}<xoffset>{+-}<yoffset>]. See
-.BR XParseGeometry (3)
-for further details.
-.TP
-.B \-i
-will fixate the position given with the -g option.
+to use when st-wl is run (default: the built-in JetBrains Mono Nerd Font at
+size @FONTSIZE@).
 .TP
 .BI \-n " name"
-defines the window instance name (default $TERM).
+is accepted for compatibility with st and ignored; Wayland has no instance
+names.
 .TP
 .BI \-o " iofile"
 writes all the I/O to
@@ -82,14 +94,16 @@ This feature is useful when recording st-wl sessions. A value of "-" means
 standard output.
 .TP
 .BI \-T " title"
-defines the window title (default 'st-wl').
+defines the window title (default 'st-wl', or the command name when a command
+is given).
 .TP
 .BI \-t " title"
-defines the window title (default 'st-wl').
+same as
+.BR \-T .
 .TP
 .BI \-w " windowid"
-embeds st-wl within the window identified by
-.I windowid
+is accepted for compatibility with st and ignored; Wayland does not support
+embedding windows.
 .TP
 .BI \-l " line"
 use a tty
@@ -152,13 +166,78 @@ Decrease font size.
 Reset to default font size.
 .TP
 .B Ctrl-Shift-y
-Paste from primary selection (middle mouse button).
+Paste from the clipboard selection.
 .TP
 .B Ctrl-Shift-c
 Copy the selected text to the clipboard selection.
 .TP
 .B Ctrl-Shift-v
 Paste from the clipboard selection.
+.TP
+.B Shift-Insert
+Paste from the clipboard selection.
+.TP
+.B Ctrl-Insert
+Copy the selected text to the clipboard selection.
+.TP
+.B Ctrl-Shift-o
+Increase the background opacity by 0.05.
+.TP
+.B Ctrl-Shift-p
+Decrease the background opacity by 0.05.
+.TP
+.B Ctrl-Alt-o
+Increase the unfocused background opacity by 0.05.
+.TP
+.B Ctrl-Alt-p
+Decrease the unfocused background opacity by 0.05.
+.TP
+.B F11
+Toggle fullscreen.
+.TP
+.B Ctrl-Shift-Return
+Open a new st-wl in the current working directory.
+.TP
+.B Ctrl-Shift-F1
+Cycle through the kitty graphics debug display modes.
+.TP
+.B Ctrl-Shift-F6
+Dump the kitty graphics state to stderr.
+.TP
+.B Ctrl-Shift-F7
+Unload all kitty graphics images from memory.
+.TP
+.B Ctrl-Shift-F8
+Toggle showing kitty graphics images.
+.SH FOCUS TRANSPARENCY
+The background is drawn with the
+.B \-A
+opacity while the window has keyboard focus and fades to the
+.B \-U
+opacity when it loses focus.
+.PP
+st-wl cannot see tmux panes, so inactive panes are dimmed through a sentinel
+background color. Every cell whose background is exactly the
+.I \%unfocusedpanebg
+color from config.h (default #@UNFOCUSEDPANEBG@) is drawn with the default background
+color at the
+.B \-U
+opacity. Let tmux paint inactive panes with that color by adding this to
+.IR ~/.tmux.conf :
+.PP
+.RS
+.nf
+set \-as terminal\-features 'st*:RGB'
+set \-g window\-style        'bg=#@UNFOCUSEDPANEBG@'
+set \-g window\-active\-style 'bg=terminal'
+.fi
+.RE
+.PP
+The RGB feature makes tmux send the color unchanged instead of mapping it to the
+256 color palette. Only cells with the default background are dimmed;
+programs that paint their own background are not. Set
+.I \%unfocusedpanebg
+to \-1 to disable this.
 .SH CUSTOMIZATION
 .B st-wl
 can be customized by creating a custom config.h and (re)compiling the source

@@ -175,7 +175,7 @@ unsigned int tabspaces = 8;
 
 #if ALPHA_PATCH
 /* bg opacity */
-#define DEFAULT_ALPHA 0.8
+#define DEFAULT_ALPHA 0.95
 float alpha = DEFAULT_ALPHA;
 uint8_t term_alpha = (uint8_t)(DEFAULT_ALPHA*255.0);
 #if ALPHA_GRADIENT_PATCH
@@ -183,7 +183,13 @@ float grad_alpha = 0.54; //alpha value that'll change
 float stat_alpha = 0.46; //constant alpha value that'll get added to grad_alpha
 #endif // ALPHA_GRADIENT_PATCH
 #if ALPHA_FOCUS_HIGHLIGHT_PATCH
-float alphaUnfocused = 0.6;
+float alphaUnfocused = 0.75;
+/* Cells with this exact background (0xRRGGBB) are drawn with the default
+ * background color at alphaUnfocused. Pair it with tmux to dim inactive panes:
+ *   set -g window-style        'bg=#300a25'
+ *   set -g window-active-style 'bg=terminal'
+ * Set to -1 to disable. */
+int unfocusedpanebg = 0x300a25;
 #endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 #endif // ALPHA_PATCH
 
@@ -392,8 +398,8 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XKB_KEY_O,           changealpha,     {.f = +0.05} },
 	{ TERMMOD,              XKB_KEY_P,           changealpha,     {.f = -0.05} },
 	#if ALPHA_FOCUS_HIGHLIGHT_PATCH
-	//{ TERMMOD,              XKB_KEY_,           changealphaunfocused, {.f = +0.05} },
-	//{ TERMMOD,              XKB_KEY_,           changealphaunfocused, {.f = -0.05} },
+	{ MOD_MASK_CTRL|MOD_MASK_ALT, XKB_KEY_o,     changealphaunfocused, {.f = +0.05} },
+	{ MOD_MASK_CTRL|MOD_MASK_ALT, XKB_KEY_p,     changealphaunfocused, {.f = -0.05} },
 	#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 	#endif // ALPHA_PATCH
 	#if FULLSCREEN_PATCH

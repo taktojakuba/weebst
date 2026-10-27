@@ -369,6 +369,9 @@ static double defaultfontsize = 0;
 
 #if ALPHA_PATCH
 static char *opt_alpha = NULL;
+#if ALPHA_FOCUS_HIGHLIGHT_PATCH
+static char *opt_alpha_unfocused = NULL;
+#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 #endif // ALPHA_PATCH
 static char *opt_class = NULL;
 static char **opt_cmd  = NULL;
@@ -1716,12 +1719,18 @@ void xloadcols(void)
 
 	#if ALPHA_PATCH
 	/* set alpha value of bg color */
+	/* apply the command line values once, so runtime changes stick */
 	if (opt_alpha)
 	{
 		alpha = strtof(opt_alpha, NULL);
+		opt_alpha = NULL;
 	}
 	term_alpha = (uint8_t)(alpha*255.0);
 	#if ALPHA_FOCUS_HIGHLIGHT_PATCH
+	if (opt_alpha_unfocused) {
+		alphaUnfocused = strtof(opt_alpha_unfocused, NULL);
+		opt_alpha_unfocused = NULL;
+	}
 	term_alpha_unfocused = (uint8_t)(alphaUnfocused*255.0);
 	#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 	#endif // ALPHA_PATCH
@@ -2358,7 +2367,18 @@ static void wldrawCharacter(Glyph g, int x, int y)
 		wlclear(winx, winy + win.ch, winx + width, win.h);
   #endif
 	/* Clean up the region we want to draw to. */
-	wld_fill_rectangle(wld.renderer, (bg & ((uint32_t)bgalpha() << 24)) | (bg & 0x00FFFFFF), winx, winy, width, win.ch);
+	{
+		uint32_t cellbg = bg;
+		uint32_t cellalpha = bgalpha();
+		#if ALPHA_PATCH && ALPHA_FOCUS_HIGHLIGHT_PATCH
+		/* sentinel background, e.g. an inactive tmux pane */
+		if (unfocusedpanebg >= 0 && (bg & 0x00FFFFFF) == (uint32_t)unfocusedpanebg) {
+			cellbg = dc.col[defaultbg];
+			cellalpha = MIN(cellalpha, term_alpha_unfocused);
+		}
+		#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
+		wld_fill_rectangle(wld.renderer, (cellbg & (cellalpha << 24)) | (cellbg & 0x00FFFFFF), winx, winy, width, win.ch);
+	}
 
 	#if KITTY_GRAPHICS_PATCH
 	/* Image placeholders are drawn as spaces, the images are drawn
@@ -3594,11 +3614,11 @@ run(void)
 void
 usage(void)
 {
-	die("usage: %s [-aiv] [-c class] [-f font] [-g geometry]"
+	die("usage: %s [-av] [-A alpha] [-U alpha] [-c class] [-f font]"
 			" [-n name] [-o file]\n"
 			"          [-T title] [-t title] [-w windowid]"
 			" [[-e] command [args ...]]\n"
-			"       %s [-aiv] [-c class] [-f font] [-g geometry]"
+			"       %s [-av] [-A alpha] [-U alpha] [-c class] [-f font]"
 			" [-n name] [-o file]\n"
 			"          [-T title] [-t title] [-w windowid] -l line"
 			" [stty_args ...]\n", argv0, argv0);
@@ -3623,6 +3643,11 @@ main(int argc, char *argv[])
     case 'A':
       opt_alpha = EARGF(usage());
 		break;
+	#if ALPHA_FOCUS_HIGHLIGHT_PATCH
+		case 'U':
+			opt_alpha_unfocused = EARGF(usage());
+			break;
+	#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 	#endif // ALPHA_PATCH
 		case 'c':
 			opt_class = EARGF(usage());

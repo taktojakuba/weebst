@@ -25,6 +25,16 @@ DEP = $(SRC:%.c=.deps/%.d)
 
 all: st-wl
 
+# Defaults substituted into the man page, read from the config.h st-wl is built with.
+MAN_ALPHA = $(or $(shell sed -n 's/^.define DEFAULT_ALPHA[[:space:]]*\([0-9.]*\).*/\1/p' config.h),$(error DEFAULT_ALPHA not found in config.h))
+MAN_ALPHA_UNFOCUSED = $(or $(shell sed -n 's/^float alphaUnfocused = \([0-9.]*\);.*/\1/p' config.h),$(error alphaUnfocused not found in config.h))
+MAN_UNFOCUSEDPANEBG = $(or $(shell sed -n 's/^int unfocusedpanebg = 0x\([0-9a-fA-F]*\);.*/\1/p' config.h),$(error unfocusedpanebg not found in config.h))
+MAN_TERMNAME = $(or $(shell sed -n 's/^char \*termname = "\([^"]*\)";.*/\1/p' config.h),$(error termname not found in config.h))
+MAN_TERMCLASS = $(or $(shell sed -n 's/^char \*termclass = "\([^"]*\)";.*/\1/p' config.h),$(error termclass not found in config.h))
+MAN_FONTSIZE = $(or $(shell sed -n 's/^.define DEFAULTFONTSIZE[[:space:]]*\([0-9.]*\).*/\1/p' config.h),$(error DEFAULTFONTSIZE not found in config.h))
+MAN_COLS = $(or $(shell sed -n 's/^static unsigned int cols = \([0-9]*\);.*/\1/p' config.h),$(error cols not found in config.h))
+MAN_ROWS = $(or $(shell sed -n 's/^static unsigned int rows = \([0-9]*\);.*/\1/p' config.h),$(error rows not found in config.h))
+
 options:
 	@echo st-wl build options:
 	@echo "CFLAGS  = $(STCFLAGS)"
@@ -110,10 +120,21 @@ clean:
 
 install: st-wl
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	rm -f $(DESTDIR)$(PREFIX)/bin/st-wl
 	cp -f st-wl $(DESTDIR)$(PREFIX)/bin
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/st-wl
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
-	sed "s/VERSION/$(VERSION)/g" < st-wl.1 > $(DESTDIR)$(MANPREFIX)/man1/st-wl.1
+	@echo cp st-wl.1 $(DESTDIR)$(MANPREFIX)/man1/st-wl.1
+	@sed -e "s/VERSION/$(VERSION)/g" \
+	    -e "s/@ALPHA@/$(MAN_ALPHA)/g" \
+	    -e "s/@ALPHA_UNFOCUSED@/$(MAN_ALPHA_UNFOCUSED)/g" \
+	    -e "s/@UNFOCUSEDPANEBG@/$(MAN_UNFOCUSEDPANEBG)/g" \
+	    -e "s/@TERMNAME@/$(MAN_TERMNAME)/g" \
+	    -e "s/@TERMCLASS@/$(MAN_TERMCLASS)/g" \
+	    -e "s/@FONTSIZE@/$(MAN_FONTSIZE)/g" \
+	    -e "s/@COLS@/$(MAN_COLS)/g" \
+	    -e "s/@ROWS@/$(MAN_ROWS)/g" \
+	    < st-wl.1 > $(DESTDIR)$(MANPREFIX)/man1/st-wl.1
 	chmod 644 $(DESTDIR)$(MANPREFIX)/man1/st-wl.1
 	tic -sx st.info
 	mkdir -p $(DESTDIR)$(PREFIX)/share/applications
