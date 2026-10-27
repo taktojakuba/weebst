@@ -384,6 +384,13 @@ static char *opt_dir   = NULL;
 
 #if ALPHA_PATCH && ALPHA_FOCUS_HIGHLIGHT_PATCH
 static int focused = 0;
+static uint8_t term_alpha_unfocused = 255;
+#if ALPHA_FOCUS_FADE_MS > 0
+/* Focus-loss alpha fade: wall-clock driven so the end value is always exact. */
+static uint8_t term_alpha_current = 255;
+static int focus_fading = 0;
+static struct timespec focus_fade_start;
+#endif // ALPHA_FOCUS_FADE_MS
 #endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 
 #if BLINKING_CURSOR_PATCH
@@ -1178,6 +1185,15 @@ kbdenter(void *data, struct wl_keyboard *keyboard, uint32_t serial,
 	win.mode |= MODE_FOCUSED;
 	if (IS_SET(MODE_FOCUS))
 		ttywrite("\033[I", 3, 0);
+	#if ALPHA_PATCH && ALPHA_FOCUS_HIGHLIGHT_PATCH
+	/* snap to the focused alpha and repaint the full background */
+	#if ALPHA_FOCUS_FADE_MS > 0
+	focus_fading = 0;
+	term_alpha_current = term_alpha;
+	#endif // ALPHA_FOCUS_FADE_MS
+	wl.resized = true;
+	tfulldirt();
+	#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 	/* need to redraw the cursor */
 	wlneeddraw();
 }
@@ -1191,6 +1207,16 @@ kbdleave(void *data, struct wl_keyboard *keyboard, uint32_t serial,
 	win.mode &= ~MODE_FOCUSED;
 	if (IS_SET(MODE_FOCUS))
 		ttywrite("\033[O", 3, 0);
+	#if ALPHA_PATCH && ALPHA_FOCUS_HIGHLIGHT_PATCH
+	/* fade (or switch) to the unfocused alpha and repaint the full background */
+	#if ALPHA_FOCUS_FADE_MS > 0
+	focus_fading = term_alpha != term_alpha_unfocused;
+	term_alpha_current = term_alpha;
+	clock_gettime(CLOCK_MONOTONIC, &focus_fade_start);
+	#endif // ALPHA_FOCUS_FADE_MS
+	wl.resized = true;
+	tfulldirt();
+	#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 	/* need to redraw the cursor */
 	wlneeddraw();
 	/* disable key repeat */
@@ -1695,6 +1721,9 @@ void xloadcols(void)
 		alpha = strtof(opt_alpha, NULL);
 	}
 	term_alpha = (uint8_t)(alpha*255.0);
+	#if ALPHA_FOCUS_HIGHLIGHT_PATCH
+	term_alpha_unfocused = (uint8_t)(alphaUnfocused*255.0);
+	#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 	#endif // ALPHA_PATCH
 	loaded = 1;
 }
@@ -1912,13 +1941,29 @@ wlneeddraw(void)
 	wl.needdraw = true;
 }
 
+#if ALPHA_PATCH
+/* Background alpha for the current focus state. */
+static uint8_t bgalpha(void)
+{
+	#if ALPHA_FOCUS_HIGHLIGHT_PATCH
+	#if ALPHA_FOCUS_FADE_MS > 0
+	if (focus_fading)
+		return term_alpha_current;
+	#endif // ALPHA_FOCUS_FADE_MS
+	return IS_SET(MODE_FOCUSED) ? term_alpha : term_alpha_unfocused;
+	#else
+	return term_alpha;
+	#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
+}
+#endif // ALPHA_PATCH
+
 /*
  * Absolute coordinates.
  */
 static void wlclear(int x1, int y1, int x2, int y2)
 {
 	uint32_t color = dc.col[IS_SET(MODE_REVERSE) ? defaultfg : defaultbg];
-	color = (color & term_alpha << 24) | (color & 0x00FFFFFF);
+	color = (color & (uint32_t)bgalpha() << 24) | (color & 0x00FFFFFF);
 	wld_fill_rectangle(wld.renderer, color, x1, y1, x2 - x1, y2 - y1);
 }
 
@@ -2129,7 +2174,7 @@ xfinishdraw(void)
 void wltermclear(int col1, int row1, int col2, int row2)
 {
 	uint32_t color = dc.col[IS_SET(MODE_REVERSE) ? defaultfg : defaultbg];
-	color = (color & term_alpha << 24) | (color & 0x00FFFFFF);
+	color = (color & (uint32_t)bgalpha() << 24) | (color & 0x00FFFFFF);
 	#if ANYSIZE_PATCH
 	wld_fill_rectangle(wld.renderer, color, win.hborderpx + col1 * win.cw,
 	                   win.vborderpx + row1 * win.ch, (col2 - col1 + 1) * win.cw,
@@ -2313,7 +2358,7 @@ static void wldrawCharacter(Glyph g, int x, int y)
 		wlclear(winx, winy + win.ch, winx + width, win.h);
   #endif
 	/* Clean up the region we want to draw to. */
-	wld_fill_rectangle(wld.renderer, (bg & (term_alpha << 24)) | (bg & 0x00FFFFFF), winx, winy, width, win.ch);
+	wld_fill_rectangle(wld.renderer, (bg & ((uint32_t)bgalpha() << 24)) | (bg & 0x00FFFFFF), winx, winy, width, win.ch);
 
 	#if KITTY_GRAPHICS_PATCH
 	/* Image placeholders are drawn as spaces, the images are drawn
@@ -3496,6 +3541,27 @@ run(void)
 			if (rep_timeout < timeout)
 				timeout = rep_timeout;
 		}
+
+		#if ALPHA_PATCH && ALPHA_FOCUS_HIGHLIGHT_PATCH && ALPHA_FOCUS_FADE_MS > 0
+		/* Advance the focus-loss fade; time-based so it always ends at
+		 * exactly term_alpha_unfocused. */
+		if (focus_fading) {
+			long elapsed = TIMEDIFF(now, focus_fade_start);
+			if (elapsed >= ALPHA_FOCUS_FADE_MS) {
+				focus_fading = 0;
+				term_alpha_current = term_alpha_unfocused;
+			} else {
+				term_alpha_current = term_alpha
+					+ ((int)term_alpha_unfocused - (int)term_alpha)
+					* elapsed / ALPHA_FOCUS_FADE_MS;
+				if (timeout > 16)
+					timeout = 16;
+			}
+			wl.resized = true;
+			tfulldirt();
+			wlneeddraw();
+		}
+		#endif // ALPHA_FOCUS_FADE_MS
 
 		#if KITTY_GRAPHICS_PATCH
 		/* Schedule a redraw when an animation frame is due, and decrease

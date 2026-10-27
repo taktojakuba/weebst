@@ -232,12 +232,7 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-#if ALPHA_PATCH && ALPHA_FOCUS_HIGHLIGHT_PATCH
-unsigned int defaultbg = 0;
-unsigned int bg = 17, bgUnfocused = 16;
-#else
 unsigned int defaultbg = 258;
-#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 unsigned int defaultfg = 259;
 unsigned int defaultcs = 256;
 unsigned int defaultrcs = 257;

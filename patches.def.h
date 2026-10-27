@@ -22,7 +22,13 @@
  * https://github.com/juliusHuelsmann/st-focus/
  * https://st.suckless.org/patches/alpha_focus_highlight/
  */
-#define ALPHA_FOCUS_HIGHLIGHT_PATCH 0
+#define ALPHA_FOCUS_HIGHLIGHT_PATCH 1
+
+/* Smooth background alpha fade when losing keyboard focus, in milliseconds.
+ * Set to 0 to switch instantly. Depends on ALPHA_FOCUS_HIGHLIGHT_PATCH.
+ * https://github.com/kdedev/st-wl
+ */
+#define ALPHA_FOCUS_FADE_MS 300
 
 /* Adds gradient transparency to st, depends on the alpha patch.
  * https://st.suckless.org/patches/gradient/
