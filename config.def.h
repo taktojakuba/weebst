@@ -186,10 +186,10 @@ float stat_alpha = 0.46; //constant alpha value that'll get added to grad_alpha
 float alphaUnfocused = 0.75;
 /* Cells with this exact background (0xRRGGBB) are drawn with the default
  * background color at alphaUnfocused. Pair it with tmux to dim inactive panes:
- *   set -g window-style        'bg=#300a25'
+ *   set -g window-style        'bg=#010203'
  *   set -g window-active-style 'bg=terminal'
  * Set to -1 to disable. */
-int unfocusedpanebg = 0x300a25;
+int unfocusedpanebg = 0x010203;
 #endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 #endif // ALPHA_PATCH
 
