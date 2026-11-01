@@ -1964,6 +1964,11 @@ static uint8_t bgalpha(void)
 	return term_alpha;
 	#endif // ALPHA_FOCUS_HIGHLIGHT_PATCH
 }
+#else
+static uint8_t bgalpha(void)
+{
+	return 255;
+}
 #endif // ALPHA_PATCH
 
 /*

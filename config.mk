@@ -24,13 +24,13 @@ PKG_CONFIG = pkg-config
 #LIGATURES_LIBS = `$(PKG_CONFIG) --libs harfbuzz`
 
 # Uncomment this for the SIXEL patch / SIXEL_PATCH
-SIXEL_C = sixel.c sixel_hls.c
-SIXEL_LIBS = `$(PKG_CONFIG) --libs imlib2`
+#SIXEL_C = sixel.c sixel_hls.c
+#SIXEL_LIBS = `$(PKG_CONFIG) --libs imlib2`
 
 # Uncomment this for the kitty graphics patch / KITTY_GRAPHICS_PATCH
-KITTY_GRAPHICS_C = graphics.c rowcolumn_diacritics_helpers.c
-KITTY_GRAPHICS_INC = `$(PKG_CONFIG) --cflags imlib2`
-KITTY_GRAPHICS_LIBS = `$(PKG_CONFIG) --libs imlib2` `$(PKG_CONFIG) --libs zlib`
+#KITTY_GRAPHICS_C = graphics.c rowcolumn_diacritics_helpers.c
+#KITTY_GRAPHICS_INC = `$(PKG_CONFIG) --cflags imlib2`
+#KITTY_GRAPHICS_LIBS = `$(PKG_CONFIG) --libs imlib2` `$(PKG_CONFIG) --libs zlib`
 
 # Uncomment for the netwmicon patch / NETWMICON_PATCH
 #NETWMICON_LIBS = `$(PKG_CONFIG) --libs gdlib`

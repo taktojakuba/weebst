@@ -14,7 +14,7 @@
  * when including this patch.
  * https://st.suckless.org/patches/alpha/
  */
-#define ALPHA_PATCH 1
+#define ALPHA_PATCH 0
 
 /* The alpha focus highlight patch allows the user to specify two distinct opacity values or
  * background colors in order to easily differentiate between focused and unfocused terminal
@@ -22,7 +22,7 @@
  * https://github.com/juliusHuelsmann/st-focus/
  * https://st.suckless.org/patches/alpha_focus_highlight/
  */
-#define ALPHA_FOCUS_HIGHLIGHT_PATCH 1
+#define ALPHA_FOCUS_HIGHLIGHT_PATCH 0
 
 /* Smooth background alpha fade when losing keyboard focus, in milliseconds.
  * Set to 0 to switch instantly. Depends on ALPHA_FOCUS_HIGHLIGHT_PATCH.
@@ -158,7 +158,7 @@
 /* This patch makes the cursor color the inverse of the current cell color.
  * https://st.suckless.org/patches/dynamic-cursor-color/
  */
-#define DYNAMIC_CURSOR_COLOR_PATCH 1
+#define DYNAMIC_CURSOR_COLOR_PATCH 0
 
 /* This is a variant of the anysize patch that explicitly do not change the size increment hints,
  * i.e. only keeping the dynamic padding which is the main thing the anysize patch introduces.
@@ -255,7 +255,7 @@
  *
  * https://github.com/sergei-grechanik/st-graphics
  */
-#define KITTY_GRAPHICS_PATCH 1
+#define KITTY_GRAPHICS_PATCH 0
 
 /* This patch adds support for drawing ligatures using the Harfbuzz library to transform
  * original text of a single line to a list of glyphs with ligatures included.
@@ -311,7 +311,7 @@
  * same CWD (current working directory) as the original st instance.
  * https://st.suckless.org/patches/newterm/
  */
-#define NEWTERM_PATCH 1
+#define NEWTERM_PATCH 0
 
 /* This patch will set the _MOTIF_WM_HINTS property for the st window which, if the window manager
  * respects it, will show the st window without window decorations.
@@ -421,7 +421,7 @@
  *
  * https://gist.github.com/saitoha/70e0fdf22e3e8f63ce937c7f7da71809
  */
-#define SIXEL_PATCH 1
+#define SIXEL_PATCH 0
 
 /* This patch allows clients to embed into the st window and is useful if you tend to
  * start X applications from the terminal. For example:
@@ -474,7 +474,7 @@
  *
  * https://st.suckless.org/patches/undercurl/
  */
-#define UNDERCURL_PATCH 1
+#define UNDERCURL_PATCH 0
 
 /* Allows mouse scroll without modifier keys for regardless of alt screen using the external
  * scroll program.
