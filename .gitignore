@@ -1,7 +1,7 @@
 *.o
 config.h
 patches.h
-st-wl
+weebst
 xdg-shell-protocol.c
 compile_commands.json
 .cache

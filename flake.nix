@@ -1,5 +1,5 @@
 {
-  description = "st-wl - simple terminal for Wayland";
+  description = "weebst - simple terminal for Wayland";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -27,8 +27,8 @@
       packages = forAllSystems (
         { pkgs, ... }:
         let
-          st-wl = pkgs.stdenv.mkDerivation (finalAttrs: {
-            pname = "st-wl";
+          weebst = pkgs.stdenv.mkDerivation (finalAttrs: {
+            pname = "weebst";
             version = "1.0.0";
 
             src = ./.;
@@ -64,22 +64,22 @@
             '';
 
             postInstall = ''
-              substituteInPlace $out/share/applications/st-wl.desktop \
-                --replace-fail 'Exec=/usr/local/bin/st-wl' 'Exec=st-wl'
+              substituteInPlace $out/share/applications/weebst.desktop \
+                --replace-fail 'Exec=/usr/local/bin/weebst' 'Exec=weebst'
             '';
 
             meta = {
               description = "Simple terminal for Wayland (st-flexipatch)";
               homepage = "https://github.com/bakkeby/st-flexipatch";
               license = pkgs.lib.licenses.mit;
-              mainProgram = "st-wl";
+              mainProgram = "weebst";
               platforms = pkgs.lib.platforms.linux;
             };
           });
         in
         {
-          inherit st-wl;
-          default = st-wl;
+          inherit weebst;
+          default = weebst;
         }
       );
 

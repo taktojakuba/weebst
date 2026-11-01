@@ -26,7 +26,7 @@
 
 /* Smooth background alpha fade when losing keyboard focus, in milliseconds.
  * Set to 0 to switch instantly. Depends on ALPHA_FOCUS_HIGHLIGHT_PATCH.
- * https://github.com/kdedev/st-wl
+ * https://github.com/kdedev/weebst
  */
 #define ALPHA_FOCUS_FADE_MS 300
 

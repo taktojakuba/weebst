@@ -3,7 +3,7 @@
 }:
 
 pkgs.mkShell {
-  name = "st-wl-dev";
+  name = "weebst-dev";
 
   nativeBuildInputs = with pkgs; [
     ncurses

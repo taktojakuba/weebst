@@ -2931,7 +2931,7 @@ void xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
 	if (IS_SET(MODE_FOCUSED)) {
 		switch (win.cursor) {
 		  #if !BLINKING_CURSOR_PATCH
-			case 7: /* st-wl extension: snowman */
+			case 7: /* weebst extension: snowman */
 				g.u = 0x2603;
 			/* FALLTHROUGH */
 		  #endif // BLINKING_CURSOR_PATCH
@@ -3239,7 +3239,7 @@ wlinit(int cols, int rows)
 {
 	wl.needdraw = true;
 	wl.resized = true;
-	strcpy(wl.csd_title, "st-wl");
+	strcpy(wl.csd_title, "weebst");
 
 	if (!(wl.dpy = wl_display_connect(NULL)))
 		die("Can't open display\n");
@@ -3687,7 +3687,7 @@ run:
 		opt_cmd = argv;
 
 	if (!opt_title)
-		opt_title = (opt_line || !opt_cmd) ? "st-wl" : opt_cmd[0];
+		opt_title = (opt_line || !opt_cmd) ? "weebst" : opt_cmd[0];
 
 	setlocale(LC_CTYPE, "");
 	cols = MAX(cols, 1);

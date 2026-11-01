@@ -2885,7 +2885,7 @@ csihandle(void)
 	case '>':
 		switch (csiescseq.mode[1]) {
 			case 'q': // XTVERION
-				n = snprintf(buffer, sizeof buffer, "\x1bP>|st-wl(0.9.2)\x1b\\");
+				n = snprintf(buffer, sizeof buffer, "\x1bP>|weebst(0.9.2)\x1b\\");
 				ttywrite(buffer, n, 1);
 			break;
 			case 'c': // Secondary DA (DA2)

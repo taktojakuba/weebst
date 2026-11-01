@@ -1,4 +1,4 @@
-# st-wl - simple terminal
+# weebst - simple terminal
 # See LICENSE file for copyright and license details.
 
 CC = gcc
@@ -23,9 +23,9 @@ SRC = st.c wl.c xdg-shell-protocol.c xdg-decoration-protocol.c primary-selection
 OBJ = $(SRC:%.c=.objects/%.o)
 DEP = $(SRC:%.c=.deps/%.d)
 
-all: st-wl
+all: weebst
 
-# Defaults substituted into the man page, read from the config.h st-wl is built with.
+# Defaults substituted into the man page, read from the config.h weebst is built with.
 MAN_ALPHA = $(or $(shell sed -n 's/^.define DEFAULT_ALPHA[[:space:]]*\([0-9.]*\).*/\1/p' config.h),$(error DEFAULT_ALPHA not found in config.h))
 MAN_ALPHA_UNFOCUSED = $(or $(shell sed -n 's/^float alphaUnfocused = \([0-9.]*\);.*/\1/p' config.h),$(error alphaUnfocused not found in config.h))
 MAN_UNFOCUSEDPANEBG = $(or $(shell sed -n 's/^int unfocusedpanebg = 0x\([0-9a-fA-F]*\);.*/\1/p' config.h),$(error unfocusedpanebg not found in config.h))
@@ -36,7 +36,7 @@ MAN_COLS = $(or $(shell sed -n 's/^static unsigned int cols = \([0-9]*\);.*/\1/p
 MAN_ROWS = $(or $(shell sed -n 's/^static unsigned int rows = \([0-9]*\);.*/\1/p' config.h),$(error rows not found in config.h))
 
 options:
-	@echo st-wl build options:
+	@echo weebst build options:
 	@echo "CFLAGS  = $(STCFLAGS)"
 	@echo "LDFLAGS = $(STLDFLAGS)"
 	@echo "CC      = $(CC)"
@@ -100,7 +100,7 @@ $(OBJ): config.h config.mk patches.h
 # just to make sure that the options rule is run first
 $(THISDIR)wld/libwld.a config.h config.mk patches.h: options
 
-st-wl: $(THISDIR)wld/libwld.a $(OBJ)
+weebst: $(THISDIR)wld/libwld.a $(OBJ)
 	$(call quietlink,CC) $(STCFLAGS) -o $@ $(OBJ) $(STLDFLAGS)
 
 $(THISDIR)wld/.objects/%.o:
@@ -114,17 +114,17 @@ $(THISDIR)wld/libwld.a:
 
 clean:
 	rm -rf .objects .deps
-	rm -f st-wl st-wl-$(VERSION).tar.gz config.h options patches.h xdg-decoration-* xdg-shell-*
+	rm -f weebst weebst-$(VERSION).tar.gz config.h options patches.h xdg-decoration-* xdg-shell-*
 
 	$(MAKE) -C wld clean
 
-install: st-wl
+install: weebst
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	rm -f $(DESTDIR)$(PREFIX)/bin/st-wl
-	cp -f st-wl $(DESTDIR)$(PREFIX)/bin
-	chmod 755 $(DESTDIR)$(PREFIX)/bin/st-wl
+	rm -f $(DESTDIR)$(PREFIX)/bin/weebst
+	cp -f weebst $(DESTDIR)$(PREFIX)/bin
+	chmod 755 $(DESTDIR)$(PREFIX)/bin/weebst
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
-	@echo cp st-wl.1 $(DESTDIR)$(MANPREFIX)/man1/st-wl.1
+	@echo cp weebst.1 $(DESTDIR)$(MANPREFIX)/man1/weebst.1
 	@sed -e "s/VERSION/$(VERSION)/g" \
 	    -e "s/@ALPHA@/$(MAN_ALPHA)/g" \
 	    -e "s/@ALPHA_UNFOCUSED@/$(MAN_ALPHA_UNFOCUSED)/g" \
@@ -134,17 +134,17 @@ install: st-wl
 	    -e "s/@FONTSIZE@/$(MAN_FONTSIZE)/g" \
 	    -e "s/@COLS@/$(MAN_COLS)/g" \
 	    -e "s/@ROWS@/$(MAN_ROWS)/g" \
-	    < st-wl.1 > $(DESTDIR)$(MANPREFIX)/man1/st-wl.1
-	chmod 644 $(DESTDIR)$(MANPREFIX)/man1/st-wl.1
+	    < weebst.1 > $(DESTDIR)$(MANPREFIX)/man1/weebst.1
+	chmod 644 $(DESTDIR)$(MANPREFIX)/man1/weebst.1
 	tic -sx st.info
 	mkdir -p $(DESTDIR)$(PREFIX)/share/applications
-	cp st-wl.desktop $(DESTDIR)$(PREFIX)/share/applications
+	cp weebst.desktop $(DESTDIR)$(PREFIX)/share/applications
 	@echo Please see the README file regarding the terminfo entry of st.
 
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/st-wl
-	rm -f $(DESTDIR)$(MANPREFIX)/man1/st-wl.1
-	rm -f $(DESTDIR)$(PREFIX)/share/applications/st-wl.desktop
+	rm -f $(DESTDIR)$(PREFIX)/bin/weebst
+	rm -f $(DESTDIR)$(MANPREFIX)/man1/weebst.1
+	rm -f $(DESTDIR)$(PREFIX)/share/applications/weebst.desktop
 
 .PHONY: all clean dist install uninstall
 
