@@ -250,7 +250,6 @@
 /* This patch adds support for the kitty graphics protocol (a subset of it, including
  * Unicode placeholders and animations), ported from st-graphics:
  * images are decoded with Imlib2 and composited onto the Wayland buffer with pixman.
- * Use icat-mini.sh to display images.
  * Note that you need to uncomment the corresponding lines in config.mk when including this patch.
  * This patch can be combined with the SIXEL patch.
  *
