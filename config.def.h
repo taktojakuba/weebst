@@ -44,7 +44,7 @@ static double maxlatency = 33;
 static uint su_timeout = 200;
 
 /* Blinking timeout (0 disables blinking) */
-static unsigned int blinktimeout = 100;
+static unsigned int blinktimeout = 300;
 
 /* Thickness of underline and bar cursors */
 static unsigned int cursorthickness = 2;
@@ -68,32 +68,34 @@ int unfocusedpanebg = 0x0a0a0a;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
     /* normal */
-    [0] = "#1e1e1e",
-    [1] = "#6b6b6b",
-    [2] = "#8f8f8f",
-    [3] = "#b3b3b3",
-    [4] = "#5a5a5a",
-    [5] = "#7d7d7d",
-    [6] = "#696969",
-    [7] = "#c9c9c9",
+    [0] = "#434938",
+    [1] = "#ffb4ab",
+    [2] = "#b2e259",
+    [3] = "#b9ce90",
+    [4] = "#55eca0",
+    [5] = "#a7d64f",
+    [6] = "#b9ce90",
+    [7] = "#e2e4d5",
 
     /* bright */
-    [8] = "#3f3f3f",
-    [9] = "#8c8c8c",
-    [10] = "#a8a8a8",
-    [11] = "#d0d0d0",
-    [12] = "#767676",
-    [13] = "#9c9c9c",
-    [14] = "#848484",
-    [15] = "#f0f0f0",
+    [8] = "#8e937f",
+    [9] = "#ffb4ab",
+    [10] = "#b2e259",
+    [11] = "#b9ce90",
+    [12] = "#55eca0",
+    [13] = "#a7d64f",
+    [14] = "#b9ce90",
+    [15] = "#e2e4d5",
 
     [255] = 0,
 
     /* extra colors */
-    "#f0f0f0", /* cursor */
-    "#3f3f3f", /* reverse cursor */
-    "#121212", /* background */
-    "#d6d6d6", /* foreground */
+    "#e2e4d5", /* cursor */
+    "#12140c", /* reverse cursor */
+    "#12140c", /* background */
+    "#e2e4d5", /* foreground */
+    "#c4c9b3", /* selection foreground */
+    "#434938", /* selection background */
 };
 
 /* Default colors: background, foreground, cursor, reverse cursor */
@@ -103,8 +105,8 @@ unsigned int defaultcs = 256;
 unsigned int defaultrcs = 257;
 
 /* Selection colors */
-unsigned int selectionfg = 258;
-unsigned int selectionbg = 259;
+unsigned int selectionfg = 260;
+unsigned int selectionbg = 261;
 
 /* Cursor style: 0-1 blinking block, 2 steady block, 3-4 underline, 5-6 bar */
 static unsigned int cursorstyle = 1;
